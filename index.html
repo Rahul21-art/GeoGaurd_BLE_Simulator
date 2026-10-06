@@ -1,1271 +1,492 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>GeoGaurd BLE Tracker Simulator</title>
-
+    <title>GeoGaurd Tracker Simulator</title>
     <link rel="stylesheet" href="style.css">
-      <script src="backend.js"></script>
+
+    <style>
+        /* Extra styles used by this page (kept here so style.css stays as it is) */
+        .student-management {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .student-management .button-group { gap: 8px; }
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #ffffff;
+        }
+        .student-item.selected {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+        .student-item small { color: #6b7280; }
+        .select-student-btn {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        #allStudentData {
+            color: #e5e7eb;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow: auto;
+        }
+        .backend-note { font-size: 13px; color: #6b7280; margin-top: 12px; }
+    </style>
 </head>
 
 <body>
 
 <div class="container">
 
-    <!-- HEADER -->
     <header class="header">
         <h1>GeoGaurd</h1>
-        <p>ESP32 / BLE Multi-Student Tracker Simulator</p>
+        <p>Multi-Student Tracker Simulator (stand-in for the ESP32)</p>
     </header>
 
 
-    <!-- BLE CONNECTION -->
+    <!-- BACKEND -->
     <section class="card">
-
-        <h2>Bluetooth Connection</h2>
+        <h2>Backend Connection</h2>
 
         <div class="status-row">
-
             <div>
-                <span class="status-label">BLE Status</span>
-
-                <span id="bleStatus" class="status disconnected">
-                    Disconnected
-                </span>
+                <span class="status-label">Backend Status</span>
+                <span id="backendStatus" class="status disconnected">Not Connected</span>
             </div>
 
-            <button id="connectBtn" class="primary-btn">
-                Connect BLE
-            </button>
-
+            <button id="clearBtn" class="danger-btn">Clear All Students</button>
         </div>
 
+        <p class="backend-note">
+            This simulator sends every student's data to the backend. Open the dashboard
+            on another phone to watch all students update live.
+        </p>
     </section>
 
 
-    <!-- STUDENT MANAGEMENT -->
+    <!-- STUDENTS -->
     <section class="card">
-
         <h2>Students</h2>
 
         <div class="student-management">
-
-            <button id="addStudentBtn" class="primary-btn">
-                + Add Student
-            </button>
-
-            <span id="studentCount">
-                Students: 0
-            </span>
-
+            <div class="button-group">
+                <button id="addStudentBtn" class="primary-btn">+ Add Student</button>
+                <button id="removeStudentBtn" class="danger-btn">Remove Selected</button>
+            </div>
+            <span id="studentCount">Students: 0</span>
         </div>
 
         <div id="studentsList"></div>
-
     </section>
 
 
     <!-- SELECTED STUDENT -->
     <section class="card">
-
         <h2>Selected Student</h2>
 
         <div class="form-group">
-
-            <label for="studentId">
-                Student ID
-            </label>
-
-            <input
-                type="text"
-                id="studentId"
-                value="ST001"
-                placeholder="Enter Student ID"
-            >
-
+            <label for="studentId">Student ID</label>
+            <input type="text" id="studentId" value="ST001" placeholder="Enter Student ID">
         </div>
 
-
         <div class="form-group">
-
-            <label for="battery">
-                Battery (%)
-            </label>
-
-            <input
-                type="number"
-                id="battery"
-                value="87"
-                min="0"
-                max="100"
-            >
-
+            <label for="battery">Battery (%)</label>
+            <input type="number" id="battery" value="87" min="0" max="100">
         </div>
 
-
         <div class="form-group">
-
-            <label for="sos">
-                SOS Status
-            </label>
-
+            <label for="sos">SOS Status</label>
             <select id="sos">
-
-                <option value="OFF">
-                    OFF
-                </option>
-
-                <option value="ON">
-                    ON
-                </option>
-
+                <option value="OFF">OFF</option>
+                <option value="ON">ON</option>
             </select>
-
         </div>
-
     </section>
 
 
     <!-- LOCATION -->
     <section class="card">
-
         <h2>Location</h2>
 
         <div class="location-grid">
-
             <div class="location-box">
-
-                <span class="location-label">
-                    Latitude
-                </span>
-
-                <strong id="latitude">
-                    18.106500
-                </strong>
-
+                <span class="location-label">Latitude</span>
+                <strong id="latitude">18.106500</strong>
             </div>
 
-
             <div class="location-box">
-
-                <span class="location-label">
-                    Longitude
-                </span>
-
-                <strong id="longitude">
-                    83.395500
-                </strong>
-
+                <span class="location-label">Longitude</span>
+                <strong id="longitude">83.395500</strong>
             </div>
-
         </div>
-
 
         <div class="location-controls">
-
             <div class="form-group">
-
-                <label for="latStep">
-                    Latitude Change
-                </label>
-
-                <input
-                    type="number"
-                    id="latStep"
-                    value="0.000100"
-                    step="0.000001"
-                >
-
+                <label for="latStep">Latitude Change</label>
+                <input type="number" id="latStep" value="0.000100" step="0.000001">
             </div>
 
-
             <div class="form-group">
-
-                <label for="lngStep">
-                    Longitude Change
-                </label>
-
-                <input
-                    type="number"
-                    id="lngStep"
-                    value="0.000100"
-                    step="0.000001"
-                >
-
+                <label for="lngStep">Longitude Change</label>
+                <input type="number" id="lngStep" value="0.000100" step="0.000001">
             </div>
-
         </div>
-
     </section>
 
 
     <!-- SIMULATION CONTROLS -->
     <section class="card">
-
         <h2>Simulation Controls</h2>
 
         <div class="button-group">
-
-            <button
-                id="updateBtn"
-                class="primary-btn"
-            >
-                Update Tracker
-            </button>
-
-
-            <button
-                id="startBtn"
-                class="success-btn"
-            >
-                Start Continuous Simulation
-            </button>
-
-
-            <button
-                id="stopBtn"
-                class="danger-btn"
-                disabled
-            >
-                Stop Simulation
-            </button>
-
+            <button id="updateBtn" class="primary-btn">Update Selected Student</button>
+            <button id="startBtn" class="success-btn">Start Continuous Simulation</button>
+            <button id="stopBtn" class="danger-btn" disabled>Stop Simulation</button>
         </div>
-
 
         <div class="simulation-status">
-
-            <span>
-                Simulation:
-            </span>
-
-            <strong id="simulationStatus">
-                Stopped
-            </strong>
-
+            <span>Simulation:</span>
+            <strong id="simulationStatus">Stopped</strong>
+            <span>(all students, every 2 seconds)</span>
         </div>
-
     </section>
 
 
     <!-- ALL STUDENT DATA -->
     <section class="card">
-
         <h2>All Student Data</h2>
-
-        <div id="allStudentData" class="data-box">
-            No students added yet.
-        </div>
-
+        <div id="allStudentData" class="data-box">No students added yet.</div>
     </section>
 
 
     <!-- LIVE DATA -->
     <section class="card">
-
-        <h2>Live Tracker Data</h2>
-
-        <div class="data-box">
-
-            <pre id="liveData">{
-  "studentId": "ST001",
-  "latitude": 18.106500,
-  "longitude": 83.395500,
-  "battery": 87,
-  "sos": "OFF"
-}</pre>
-
-        </div>
-
+        <h2>Live Tracker Data (selected student)</h2>
+        <div class="data-box"><pre id="liveData">Waiting...</pre></div>
     </section>
 
 
     <!-- LAST UPDATE -->
     <section class="card">
-
         <div class="last-update">
-
-            <span>
-                Last Update
-            </span>
-
-            <strong id="lastUpdate">
-                Not updated yet
-            </strong>
-
+            <span>Last Update</span>
+            <strong id="lastUpdate">Not updated yet</strong>
         </div>
-
     </section>
 
 
-    <!-- INFORMATION -->
     <section class="info-card">
-
         <h3>How this simulator works</h3>
-
         <p>
-            This website acts as a temporary ESP32 tracker simulator.
-            Multiple student trackers can be created and simulated.
+            This website replaces the ESP32 + GPS trackers while hardware is not ready.
+            Each student has an ID, GPS location, battery and SOS status, and the data
+            format is the same one the real trackers send over BLE.
         </p>
-
         <p>
-            Each student has a separate Student ID, GPS location,
-            battery percentage and SOS status.
+            When real hardware is used, stop this simulator and clear its students.
+            The student app and the dashboard need no changes.
         </p>
-
-        <p>
-            Later, the real ESP32 + GPS hardware will replace this
-            simulator without changing the overall data format.
-        </p>
-
     </section>
 
 </div>
 
-
+<script src="backend.js"></script>
 <script>
+/* =========================================================
+   GeoGaurd Multi-Student Tracker Simulator
+   ========================================================= */
 
-    /*
-    ============================================================
-    GeoGaurd MULTI-STUDENT BLE TRACKER SIMULATOR
-    ============================================================
-    */
+const TICK_MS = 2000;
+const BASE_LAT = 18.106500;
+const BASE_LNG = 83.395500;
 
+let students = [];
+let selectedIndex = 0;
+let simulationTimer = null;
+let isSimulating = false;
+let tickBusy = false;
 
-    // ---------------------------------------------------------
-    // BLE UUIDs
-    // ---------------------------------------------------------
+const $ = (id) => document.getElementById(id);
 
-    const SERVICE_UUID =
-        "12345678-1234-1234-1234-123456789001";
+const backendStatus = $("backendStatus");
+const studentsList = $("studentsList");
+const studentCount = $("studentCount");
+const allStudentData = $("allStudentData");
+const liveData = $("liveData");
+const lastUpdate = $("lastUpdate");
+const latitudeDisplay = $("latitude");
+const longitudeDisplay = $("longitude");
+const studentIdInput = $("studentId");
+const batteryInput = $("battery");
+const sosInput = $("sos");
+const latStepInput = $("latStep");
+const lngStepInput = $("lngStep");
+const startBtn = $("startBtn");
+const stopBtn = $("stopBtn");
+const simulationStatus = $("simulationStatus");
 
-    const CHARACTERISTIC_UUID =
-        "12345678-1234-1234-1234-123456789002";
+/* ---------- Helpers ---------- */
 
+const esc = (v) => String(v).replace(/[&<>"']/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
-    // ---------------------------------------------------------
-    // BLE VARIABLES
-    // ---------------------------------------------------------
+function createStudent(number, battery) {
+    return {
+        studentId: "ST" + String(number).padStart(3, "0"),
+        latitude: BASE_LAT + (number - 1) * 0.001,
+        longitude: BASE_LNG + (number - 1) * 0.001,
+        battery: battery,
+        sos: "OFF",
+        publishedId: null          // last ID stored in backend (internal)
+    };
+}
 
-    let bluetoothDevice = null;
-    let bleCharacteristic = null;
+function nextFreeNumber() {
+    let n = students.length + 1;
+    while (students.some((s) => s.studentId === "ST" + String(n).padStart(3, "0"))) n++;
+    return n;
+}
 
-    let simulationInterval = null;
-    let isSimulating = false;
+function payload(student, stamp) {
+    return {
+        studentId: student.studentId,
+        latitude: Number(student.latitude.toFixed(6)),
+        longitude: Number(student.longitude.toFixed(6)),
+        battery: student.battery,
+        sos: student.sos,
+        timestamp: stamp || new Date().toISOString()
+    };
+}
 
+function setBackend(state, text) {
+    backendStatus.textContent = text;
+    backendStatus.className = "status " + state;
+}
 
-    // ---------------------------------------------------------
-    // STUDENT DATA
-    // ---------------------------------------------------------
+/* ---------- Backend ---------- */
 
-    let students = [];
+async function publishStudents(list) {
+    if (!backendReady()) {
+        setBackend("disconnected", "Set DB_URL in backend.js");
+        return;
+    }
 
-    let selectedStudentIndex = 0;
+    const stamp = new Date().toISOString();
 
+    const results = await Promise.all(list.map(async (s) => {
+        if (s.publishedId && s.publishedId !== s.studentId) {
+            await deleteStudent(s.publishedId);      // student was renamed
+        }
+        s.publishedId = s.studentId;
+        return publishStudent(payload(s, stamp));
+    }));
 
-    // ---------------------------------------------------------
-    // HTML ELEMENTS
-    // ---------------------------------------------------------
+    if (results.every(Boolean)) {
+        setBackend("connected", "Connected - sent " + new Date().toLocaleTimeString());
+    } else {
+        setBackend("disconnected", "Failed to reach backend");
+    }
+}
 
-    const connectBtn =
-        document.getElementById("connectBtn");
+/* ---------- Selected student form ---------- */
 
-    const addStudentBtn =
-        document.getElementById("addStudentBtn");
+function saveSelectedStudent() {
+    const s = students[selectedIndex];
+    if (!s) return;
 
-    const studentsList =
-        document.getElementById("studentsList");
+    s.studentId = studentIdInput.value.trim() || s.studentId;
 
-    const studentCount =
-        document.getElementById("studentCount");
+    let battery = parseInt(batteryInput.value, 10);
+    if (isNaN(battery)) battery = 0;
+    s.battery = Math.max(0, Math.min(100, battery));
 
-    const allStudentData =
-        document.getElementById("allStudentData");
+    s.sos = sosInput.value;
+}
 
-    const updateBtn =
-        document.getElementById("updateBtn");
+function loadSelectedStudent() {
+    const s = students[selectedIndex];
+    if (!s) return;
 
-    const startBtn =
-        document.getElementById("startBtn");
+    studentIdInput.value = s.studentId;
+    batteryInput.value = s.battery;
+    sosInput.value = s.sos;
+    latitudeDisplay.textContent = s.latitude.toFixed(6);
+    longitudeDisplay.textContent = s.longitude.toFixed(6);
 
-    const stopBtn =
-        document.getElementById("stopBtn");
+    liveData.textContent = JSON.stringify(payload(s), null, 2);
+    lastUpdate.textContent = new Date().toLocaleTimeString();
+}
 
-    const bleStatus =
-        document.getElementById("bleStatus");
+/* ---------- Rendering ---------- */
 
-    const simulationStatus =
-        document.getElementById("simulationStatus");
+function renderStudents() {
+    studentsList.innerHTML = "";
 
-    const latitudeDisplay =
-        document.getElementById("latitude");
+    students.forEach((s, index) => {
+        const item = document.createElement("div");
+        item.className = "student-item" + (index === selectedIndex ? " selected" : "");
+        item.innerHTML = `
+            <div>
+                <strong>${esc(s.studentId)}</strong><br>
+                <small>Battery: ${s.battery}% | SOS: ${esc(s.sos)}<br>
+                ${s.latitude.toFixed(6)}, ${s.longitude.toFixed(6)}</small>
+            </div>
+            <button class="select-student-btn">Select</button>`;
 
-    const longitudeDisplay =
-        document.getElementById("longitude");
+        item.querySelector("button").addEventListener("click", () => {
+            saveSelectedStudent();
+            selectedIndex = index;
+            refreshUI();
+        });
 
-    const liveData =
-        document.getElementById("liveData");
-
-    const lastUpdate =
-        document.getElementById("lastUpdate");
-
-    const studentIdInput =
-        document.getElementById("studentId");
-
-    const batteryInput =
-        document.getElementById("battery");
-
-    const sosInput =
-        document.getElementById("sos");
-
-    const latStepInput =
-        document.getElementById("latStep");
-
-    const lngStepInput =
-        document.getElementById("lngStep");
-
-
-    // ---------------------------------------------------------
-    // CREATE FIRST STUDENT
-    // ---------------------------------------------------------
-
-    students.push({
-
-        studentId: "ST001",
-
-        latitude: 18.106500,
-
-        longitude: 83.395500,
-
-        battery: 87,
-
-        sos: "OFF"
-
+        studentsList.appendChild(item);
     });
 
-
-    // ---------------------------------------------------------
-    // ADD STUDENT
-    // ---------------------------------------------------------
-
-    addStudentBtn.addEventListener(
-        "click",
-        addStudent
-    );
-
-
-    function addStudent() {
-
-        const number =
-            students.length + 1;
-
-        const newStudent = {
-
-            studentId:
-                "ST" +
-                String(number).padStart(3, "0"),
-
-            latitude:
-                18.106500 + (students.length * 0.001),
-
-            longitude:
-                83.395500 + (students.length * 0.001),
-
-            battery: 100,
-
-            sos: "OFF"
-
-        };
-
-
-        students.push(newStudent);
-
-
-        selectedStudentIndex =
-            students.length - 1;
-
-
-        loadSelectedStudent();
-
-        renderStudents();
-
-        updateAllStudentData();
-
-    }
-
-
-    // ---------------------------------------------------------
-    // SELECT STUDENT
-    // ---------------------------------------------------------
-
-    function selectStudent(index) {
-
-        saveSelectedStudent();
-
-        selectedStudentIndex = index;
-
-        loadSelectedStudent();
-
-        renderStudents();
-
-    }
-
-
-    // ---------------------------------------------------------
-    // LOAD SELECTED STUDENT
-    // ---------------------------------------------------------
-
-    function loadSelectedStudent() {
-
-        const student =
-            students[selectedStudentIndex];
-
-
-        if (!student) {
-            return;
-        }
-
-
-        studentIdInput.value =
-            student.studentId;
-
-        batteryInput.value =
-            student.battery;
-
-        sosInput.value =
-            student.sos;
-
-        latitudeDisplay.textContent =
-            student.latitude.toFixed(6);
-
-        longitudeDisplay.textContent =
-            student.longitude.toFixed(6);
-
-
-        displayTrackerData(
-            getTrackerData()
-        );
-
-    }
-
-
-    // ---------------------------------------------------------
-    // SAVE SELECTED STUDENT
-    // ---------------------------------------------------------
-
-    function saveSelectedStudent() {
-
-        const student =
-            students[selectedStudentIndex];
-
-
-        if (!student) {
-            return;
-        }
-
-
-        student.studentId =
-            studentIdInput.value.trim() ||
-            student.studentId;
-
-
-        let battery =
-            parseInt(
-                batteryInput.value
-            );
-
-
-        if (isNaN(battery)) {
-            battery = 0;
-        }
-
-
-        battery =
-            Math.max(
-                0,
-                Math.min(
-                    100,
-                    battery
-                )
-            );
-
-
-        student.battery =
-            battery;
-
-
-        student.sos =
-            sosInput.value;
-
-    }
-
-
-    // ---------------------------------------------------------
-    // RENDER STUDENTS
-    // ---------------------------------------------------------
-
-    function renderStudents() {
-
-        studentsList.innerHTML = "";
-
-
-        students.forEach(
-            (student, index) => {
-
-                const item =
-                    document.createElement("div");
-
-
-                item.className =
-                    "student-item";
-
-
-                if (
-                    index ===
-                    selectedStudentIndex
-                ) {
-
-                    item.classList.add(
-                        "selected"
-                    );
-
-                }
-
-
-                item.innerHTML = `
-
-                    <div>
-
-                        <strong>
-                            ${student.studentId}
-                        </strong>
-
-                        <br>
-
-                        <small>
-                            Battery:
-                            ${student.battery}%
-                            |
-                            SOS:
-                            ${student.sos}
-                        </small>
-
-                    </div>
-
-                    <button
-                        class="select-student-btn"
-                        data-index="${index}"
-                    >
-                        Select
-                    </button>
-
-                `;
-
-
-                studentsList.appendChild(
-                    item
-                );
-
-            }
-        );
-
-
-        studentCount.textContent =
-            "Students: " +
-            students.length;
-
-
-        document
-            .querySelectorAll(
-                ".select-student-btn"
-            )
-            .forEach(
-                button => {
-
-                    button.addEventListener(
-                        "click",
-                        () => {
-
-                            selectStudent(
-                                Number(
-                                    button.dataset.index
-                                )
-                            );
-
-                        }
-                    );
-
-                }
-            );
-
-    }
-
-
-    // ---------------------------------------------------------
-    // INPUT CHANGE
-    // ---------------------------------------------------------
-
-    studentIdInput.addEventListener(
-        "input",
-        saveSelectedStudent
-    );
-
-
-    batteryInput.addEventListener(
-        "input",
-        saveSelectedStudent
-    );
-
-
-    sosInput.addEventListener(
-        "change",
-        saveSelectedStudent
-    );
-
-
-    // ---------------------------------------------------------
-    // CONNECT BLUETOOTH
-    // ---------------------------------------------------------
-
-    connectBtn.addEventListener(
-        "click",
-        connectBluetooth
-    );
-
-
-    async function connectBluetooth() {
-
-        try {
-
-            if (!navigator.bluetooth) {
-
-                alert(
-                    "Web Bluetooth is not supported in this browser."
-                );
-
-                return;
-
-            }
-
-
-            bleStatus.textContent =
-                "Searching...";
-
-
-            bleStatus.className =
-                "status connecting";
-
-
-            bluetoothDevice =
-                await navigator.bluetooth.requestDevice({
-
-                    acceptAllDevices: true,
-
-                    optionalServices: [
-                        SERVICE_UUID
-                    ]
-
-                });
-
-
-            console.log(
-                "Selected device:",
-                bluetoothDevice.name
-            );
-
-
-            bluetoothDevice.addEventListener(
-                "gattserverdisconnected",
-                handleDisconnect
-            );
-
-
-            const server =
-                await bluetoothDevice.gatt.connect();
-
-
-            const service =
-                await server.getPrimaryService(
-                    SERVICE_UUID
-                );
-
-
-            bleCharacteristic =
-                await service.getCharacteristic(
-                    CHARACTERISTIC_UUID
-                );
-
-
-            bleStatus.textContent =
-                "Connected";
-
-
-            bleStatus.className =
-                "status connected";
-
-
-            connectBtn.textContent =
-                "Connected";
-
-
-            connectBtn.disabled =
-                true;
-
-
-            console.log(
-                "BLE connected successfully"
-            );
-
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "BLE connection error:",
-                error
-            );
-
-
-            bleStatus.textContent =
-                "Connection Failed";
-
-
-            bleStatus.className =
-                "status disconnected";
-
-
-            alert(
-                "Bluetooth connection failed."
-            );
-
-        }
-
-    }
-
-
-    // ---------------------------------------------------------
-    // HANDLE DISCONNECT
-    // ---------------------------------------------------------
-
-    function handleDisconnect() {
-
-        bleStatus.textContent =
-            "Disconnected";
-
-
-        bleStatus.className =
-            "status disconnected";
-
-
-        connectBtn.textContent =
-            "Connect BLE";
-
-
-        connectBtn.disabled =
-            false;
-
-
-        bluetoothDevice =
-            null;
-
-
-        bleCharacteristic =
-            null;
-
-    }
-
-
-    // ---------------------------------------------------------
-    // GET TRACKER DATA
-    // ---------------------------------------------------------
-
-    function getTrackerData() {
-
-        saveSelectedStudent();
-
-
-        const student =
-            students[selectedStudentIndex];
-
-
-        return {
-
-            studentId:
-                student.studentId,
-
-            latitude:
-                Number(
-                    student.latitude.toFixed(6)
-                ),
-
-            longitude:
-                Number(
-                    student.longitude.toFixed(6)
-                ),
-
-            battery:
-                student.battery,
-
-            sos:
-                student.sos,
-
-            timestamp:
-                new Date().toISOString()
-
-        };
-
-    }
-
-
-    // ---------------------------------------------------------
-    // DISPLAY TRACKER DATA
-    // ---------------------------------------------------------
-
-    function displayTrackerData(data) {
-
-        latitudeDisplay.textContent =
-            data.latitude.toFixed(6);
-
-
-        longitudeDisplay.textContent =
-            data.longitude.toFixed(6);
-
-
-        liveData.textContent =
-            JSON.stringify(
-                data,
-                null,
-                2
-            );
-
-
-        lastUpdate.textContent =
-            new Date().toLocaleTimeString();
-
-    }
-
-
-    // ---------------------------------------------------------
-    // UPDATE ALL STUDENT DATA
-    // ---------------------------------------------------------
-
-    function updateAllStudentData() {
-
-        if (students.length === 0) {
-
-            allStudentData.textContent =
-                "No students added yet.";
-
-            return;
-
-        }
-
-
-        allStudentData.textContent =
-            JSON.stringify(
-                students,
-                null,
-                2
-            );
-
-    }
-
-
-    // ---------------------------------------------------------
-    // SEND BLE DATA
-    // ---------------------------------------------------------
-
-    async function sendBLEData(data) {
-
-        const jsonData =
-            JSON.stringify(data);
-
-
-        console.log(
-            "Tracker data:",
-            jsonData
-        );
-
-
-        if (!bleCharacteristic) {
-
-            console.log(
-                "BLE characteristic not connected."
-            );
-
-            return;
-
-        }
-
-
-        try {
-
-            const encoder =
-                new TextEncoder();
-
-
-            const encodedData =
-                encoder.encode(
-                    jsonData
-                );
-
-
-            await bleCharacteristic.writeValue(
-                encodedData
-            );
-
-
-            console.log(
-                "Data sent through BLE"
-            );
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "BLE send error:",
-                error
-            );
-
-        }
-
-    }
-
-
-    // ---------------------------------------------------------
-    // MOVE SELECTED STUDENT
-    // ---------------------------------------------------------
-
-    function moveSelectedStudent() {
-
-        const student =
-            students[selectedStudentIndex];
-
-
-        if (!student) {
-            return;
-        }
-
-
-        const latStep =
-            parseFloat(
-                latStepInput.value
-            ) || 0.000100;
-
-
-        const lngStep =
-            parseFloat(
-                lngStepInput.value
-            ) || 0.000100;
-
-
-        student.latitude +=
-            latStep;
-
-
-        student.longitude +=
-            lngStep;
-
-
-        if (
-            student.latitude > 90
-        ) {
-
-            student.latitude = 90;
-
-        }
-
-
-        if (
-            student.latitude < -90
-        ) {
-
-            student.latitude = -90;
-
-        }
-
-
-        if (
-            student.longitude > 180
-        ) {
-
-            student.longitude = -180;
-
-        }
-
-
-        if (
-            student.longitude < -180
-        ) {
-
-            student.longitude = 180;
-
-        }
-
-    }
-
-
-    // ---------------------------------------------------------
-    // UPDATE TRACKER
-    // ---------------------------------------------------------
-
-    updateBtn.addEventListener(
-        "click",
-        updateTracker
-    );
-
-
-    async function updateTracker() {
-
-        saveSelectedStudent();
-
-
-        moveSelectedStudent();
-
-
-        const data =
-            getTrackerData();
-
-
-        displayTrackerData(
-            data
-        );
-
-
-        updateAllStudentData();
-
-
-        renderStudents();
-
-
-        await sendBLEData(
-            data
-        );
-
-    }
-
-
-    // ---------------------------------------------------------
-    // START CONTINUOUS SIMULATION
-    // ---------------------------------------------------------
-
-    startBtn.addEventListener(
-        "click",
-        startSimulation
-    );
-
-
-    function startSimulation() {
-
-        if (isSimulating) {
-            return;
-        }
-
-
-        isSimulating = true;
-
-
-        simulationStatus.textContent =
-            "Running";
-
-
-        startBtn.disabled =
-            true;
-
-
-        stopBtn.disabled =
-            false;
-
-
-        updateTracker();
-
-
-        simulationInterval =
-            setInterval(
-                updateTracker,
-                3000
-            );
-
-    }
-
-
-    // ---------------------------------------------------------
-    // STOP SIMULATION
-    // ---------------------------------------------------------
-
-    stopBtn.addEventListener(
-        "click",
-        stopSimulation
-    );
-
-
-    function stopSimulation() {
-
-        if (
-            simulationInterval
-        ) {
-
-            clearInterval(
-                simulationInterval
-            );
-
-        }
-
-
-        simulationInterval =
-            null;
-
-
-        isSimulating =
-            false;
-
-
-        simulationStatus.textContent =
-            "Stopped";
-
-
-        startBtn.disabled =
-            false;
-
-
-        stopBtn.disabled =
-            true;
-
-    }
-
-
-    // ---------------------------------------------------------
-    // INITIAL DISPLAY
-    // ---------------------------------------------------------
-
+    studentCount.textContent = "Students: " + students.length;
+}
+
+function updateAllStudentData() {
+    allStudentData.textContent = students.length === 0
+        ? "No students added yet."
+        : JSON.stringify(students.map((s) => payload(s)), null, 2);
+}
+
+function refreshUI() {
     renderStudents();
-
     loadSelectedStudent();
-
     updateAllStudentData();
+}
 
+/* ---------- Movement ---------- */
 
-    console.log(
-        "GeoGaurd Multi-Student BLE Simulator loaded."
-    );
+function moveStudent(student) {
+    const latStep = parseFloat(latStepInput.value) || 0.0001;
+    const lngStep = parseFloat(lngStepInput.value) || 0.0001;
 
+    student.latitude = Math.max(-90, Math.min(90, student.latitude + latStep));
 
-    console.log(
-        "Service UUID:",
-        SERVICE_UUID
-    );
+    student.longitude += lngStep;
+    if (student.longitude > 180) student.longitude = -180;
+    if (student.longitude < -180) student.longitude = 180;
+}
 
+/* ---------- Buttons ---------- */
 
-    console.log(
-        "Characteristic UUID:",
-        CHARACTERISTIC_UUID
-    );
+$("addStudentBtn").addEventListener("click", async () => {
+    saveSelectedStudent();
 
+    const student = createStudent(nextFreeNumber(), 100);
+    students.push(student);
+    selectedIndex = students.length - 1;
+
+    refreshUI();
+    await publishStudents([student]);
+});
+
+$("removeStudentBtn").addEventListener("click", async () => {
+    if (students.length <= 1) {
+        alert("At least one student must remain.");
+        return;
+    }
+
+    const removed = students.splice(selectedIndex, 1)[0];
+    selectedIndex = Math.max(0, selectedIndex - 1);
+
+    refreshUI();
+    await deleteStudent(removed.publishedId || removed.studentId);
+});
+
+$("clearBtn").addEventListener("click", async () => {
+    if (!confirm("Delete ALL students from the backend and reset the simulator?")) return;
+
+    stopSimulation();
+    await clearAllStudents();
+
+    students = [createStudent(1, 87)];
+    selectedIndex = 0;
+    refreshUI();
+    setBackend("connecting", "Cleared");
+});
+
+$("updateBtn").addEventListener("click", async () => {
+    saveSelectedStudent();
+    const s = students[selectedIndex];
+    moveStudent(s);
+    refreshUI();
+    await publishStudents([s]);
+});
+
+studentIdInput.addEventListener("change", () => { saveSelectedStudent(); refreshUI(); });
+batteryInput.addEventListener("input", () => { saveSelectedStudent(); renderStudents(); updateAllStudentData(); });
+sosInput.addEventListener("change", () => { saveSelectedStudent(); renderStudents(); updateAllStudentData(); });
+
+/* ---------- Continuous simulation (ALL students) ---------- */
+
+async function simulateTick() {
+    if (tickBusy) return;
+    tickBusy = true;
+
+    try {
+        saveSelectedStudent();
+        students.forEach(moveStudent);
+        refreshUI();
+        await publishStudents(students);
+    } finally {
+        tickBusy = false;
+    }
+}
+
+function startSimulation() {
+    if (isSimulating) return;
+
+    isSimulating = true;
+    simulationStatus.textContent = "Running";
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+
+    simulateTick();
+    simulationTimer = setInterval(simulateTick, TICK_MS);
+}
+
+function stopSimulation() {
+    clearInterval(simulationTimer);
+    simulationTimer = null;
+    isSimulating = false;
+
+    simulationStatus.textContent = "Stopped";
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+}
+
+startBtn.addEventListener("click", startSimulation);
+stopBtn.addEventListener("click", stopSimulation);
+
+/* ---------- Init ---------- */
+
+students.push(createStudent(1, 87));
+refreshUI();
+
+if (!backendReady()) {
+    setBackend("disconnected", "Set DB_URL in backend.js");
+}
+
+console.log("GeoGaurd Simulator loaded.");
 </script>
 
 </body>
