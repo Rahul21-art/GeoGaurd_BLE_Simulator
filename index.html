@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,232 +12,264 @@
 
 <body>
 
-    <div class="container">
+<div class="container">
 
-        <!-- HEADER -->
-        <header class="header">
-            <h1>GeoGaurd</h1>
-            <p>ESP32 / BLE Tracker Simulator</p>
-        </header>
+    <!-- HEADER -->
+    <header class="header">
+        <h1>GeoGaurd</h1>
+        <p>ESP32 / BLE Multi-Student Tracker Simulator</p>
+    </header>
 
 
-        <!-- BLE CONNECTION -->
-        <section class="card">
+    <!-- BLE CONNECTION -->
+    <section class="card">
 
-            <h2>Bluetooth Connection</h2>
+        <h2>Bluetooth Connection</h2>
 
-            <div class="status-row">
+        <div class="status-row">
 
-                <div>
-                    <span class="status-label">BLE Status</span>
+            <div>
+                <span class="status-label">BLE Status</span>
 
-                    <span id="bleStatus" class="status disconnected">
-                        Disconnected
-                    </span>
-                </div>
-
-                <button id="connectBtn" class="primary-btn">
-                    Connect BLE
-                </button>
-
+                <span id="bleStatus" class="status disconnected">
+                    Disconnected
+                </span>
             </div>
 
-        </section>
+            <button id="connectBtn" class="primary-btn">
+                Connect BLE
+            </button>
+
+        </div>
+
+    </section>
 
 
-        <!-- STUDENT INFORMATION -->
-        <section class="card">
+    <!-- STUDENT MANAGEMENT -->
+    <section class="card">
 
-            <h2>Student Tracker</h2>
+        <h2>Students</h2>
 
-            <div class="form-group">
+        <div class="student-management">
 
-                <label for="studentId">
-                    Student ID
-                </label>
+            <button id="addStudentBtn" class="primary-btn">
+                + Add Student
+            </button>
 
-                <input
-                    type="text"
-                    id="studentId"
-                    value="ST001"
-                    placeholder="Enter Student ID"
-                >
+            <span id="studentCount">
+                Students: 0
+            </span>
 
-            </div>
+        </div>
 
+        <div id="studentsList"></div>
 
-            <div class="form-group">
-
-                <label for="battery">
-                    Battery (%)
-                </label>
-
-                <input
-                    type="number"
-                    id="battery"
-                    value="87"
-                    min="0"
-                    max="100"
-                >
-
-            </div>
+    </section>
 
 
-            <div class="form-group">
+    <!-- SELECTED STUDENT -->
+    <section class="card">
 
-                <label for="sos">
-                    SOS Status
-                </label>
+        <h2>Selected Student</h2>
 
-                <select id="sos">
+        <div class="form-group">
 
-                    <option value="OFF">
-                        OFF
-                    </option>
+            <label for="studentId">
+                Student ID
+            </label>
 
-                    <option value="ON">
-                        ON
-                    </option>
+            <input
+                type="text"
+                id="studentId"
+                value="ST001"
+                placeholder="Enter Student ID"
+            >
 
-                </select>
-
-            </div>
-
-        </section>
+        </div>
 
 
-        <!-- LOCATION -->
-        <section class="card">
+        <div class="form-group">
 
-            <h2>Location</h2>
+            <label for="battery">
+                Battery (%)
+            </label>
 
-            <div class="location-grid">
+            <input
+                type="number"
+                id="battery"
+                value="87"
+                min="0"
+                max="100"
+            >
 
-                <div class="location-box">
-
-                    <span class="location-label">
-                        Latitude
-                    </span>
-
-                    <strong id="latitude">
-                        18.106500
-                    </strong>
-
-                </div>
+        </div>
 
 
-                <div class="location-box">
+        <div class="form-group">
 
-                    <span class="location-label">
-                        Longitude
-                    </span>
+            <label for="sos">
+                SOS Status
+            </label>
 
-                    <strong id="longitude">
-                        83.395500
-                    </strong>
+            <select id="sos">
 
-                </div>
+                <option value="OFF">
+                    OFF
+                </option>
 
-            </div>
+                <option value="ON">
+                    ON
+                </option>
 
+            </select>
 
-            <div class="location-controls">
+        </div>
 
-                <div class="form-group">
-
-                    <label for="latStep">
-                        Latitude Change
-                    </label>
-
-                    <input
-                        type="number"
-                        id="latStep"
-                        value="0.000100"
-                        step="0.000001"
-                    >
-
-                </div>
+    </section>
 
 
-                <div class="form-group">
+    <!-- LOCATION -->
+    <section class="card">
 
-                    <label for="lngStep">
-                        Longitude Change
-                    </label>
+        <h2>Location</h2>
 
-                    <input
-                        type="number"
-                        id="lngStep"
-                        value="0.000100"
-                        step="0.000001"
-                    >
+        <div class="location-grid">
 
-                </div>
+            <div class="location-box">
 
-            </div>
-
-        </section>
-
-
-        <!-- SIMULATION CONTROLS -->
-        <section class="card">
-
-            <h2>Simulation Controls</h2>
-
-
-            <div class="button-group">
-
-                <button
-                    id="updateBtn"
-                    class="primary-btn"
-                >
-                    Update Tracker
-                </button>
-
-
-                <button
-                    id="startBtn"
-                    class="success-btn"
-                >
-                    Start Continuous Simulation
-                </button>
-
-
-                <button
-                    id="stopBtn"
-                    class="danger-btn"
-                    disabled
-                >
-                    Stop Simulation
-                </button>
-
-            </div>
-
-
-            <div class="simulation-status">
-
-                <span>
-                    Simulation:
+                <span class="location-label">
+                    Latitude
                 </span>
 
-                <strong id="simulationStatus">
-                    Stopped
+                <strong id="latitude">
+                    18.106500
                 </strong>
 
             </div>
 
-        </section>
+
+            <div class="location-box">
+
+                <span class="location-label">
+                    Longitude
+                </span>
+
+                <strong id="longitude">
+                    83.395500
+                </strong>
+
+            </div>
+
+        </div>
 
 
-        <!-- LIVE DATA -->
-        <section class="card">
+        <div class="location-controls">
 
-            <h2>Live Tracker Data</h2>
+            <div class="form-group">
+
+                <label for="latStep">
+                    Latitude Change
+                </label>
+
+                <input
+                    type="number"
+                    id="latStep"
+                    value="0.000100"
+                    step="0.000001"
+                >
+
+            </div>
 
 
-            <div class="data-box">
+            <div class="form-group">
 
-                <pre id="liveData">{
+                <label for="lngStep">
+                    Longitude Change
+                </label>
+
+                <input
+                    type="number"
+                    id="lngStep"
+                    value="0.000100"
+                    step="0.000001"
+                >
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SIMULATION CONTROLS -->
+    <section class="card">
+
+        <h2>Simulation Controls</h2>
+
+        <div class="button-group">
+
+            <button
+                id="updateBtn"
+                class="primary-btn"
+            >
+                Update Tracker
+            </button>
+
+
+            <button
+                id="startBtn"
+                class="success-btn"
+            >
+                Start Continuous Simulation
+            </button>
+
+
+            <button
+                id="stopBtn"
+                class="danger-btn"
+                disabled
+            >
+                Stop Simulation
+            </button>
+
+        </div>
+
+
+        <div class="simulation-status">
+
+            <span>
+                Simulation:
+            </span>
+
+            <strong id="simulationStatus">
+                Stopped
+            </strong>
+
+        </div>
+
+    </section>
+
+
+    <!-- ALL STUDENT DATA -->
+    <section class="card">
+
+        <h2>All Student Data</h2>
+
+        <div id="allStudentData" class="data-box">
+            No students added yet.
+        </div>
+
+    </section>
+
+
+    <!-- LIVE DATA -->
+    <section class="card">
+
+        <h2>Live Tracker Data</h2>
+
+        <div class="data-box">
+
+            <pre id="liveData">{
   "studentId": "ST001",
   "latitude": 18.106500,
   "longitude": 83.395500,
@@ -244,711 +277,995 @@
   "sos": "OFF"
 }</pre>
 
-            </div>
+        </div>
 
-        </section>
-
-
-        <!-- LAST UPDATE -->
-        <section class="card">
-
-            <div class="last-update">
-
-                <span>
-                    Last Update
-                </span>
-
-                <strong id="lastUpdate">
-                    Not updated yet
-                </strong>
-
-            </div>
-
-        </section>
+    </section>
 
 
-        <!-- INFORMATION -->
-        <section class="info-card">
+    <!-- LAST UPDATE -->
+    <section class="card">
 
-            <h3>How this simulator works</h3>
+        <div class="last-update">
 
-            <p>
-                This website acts as a temporary ESP32 tracker.
-                It generates student ID, GPS location, battery and
-                SOS information and sends the data through Bluetooth.
-            </p>
+            <span>
+                Last Update
+            </span>
 
-            <p>
-                Later, the real ESP32 + GPS hardware will replace
-                this simulator without changing the overall data format.
-            </p>
+            <strong id="lastUpdate">
+                Not updated yet
+            </strong>
 
-        </section>
+        </div>
 
-    </div>
+    </section>
 
 
-    <!-- JAVASCRIPT -->
+    <!-- INFORMATION -->
+    <section class="info-card">
 
-    <script>
+        <h3>How this simulator works</h3>
 
-        /*
-        ============================================================
-        GeoGaurd BLE TRACKER SIMULATOR
-        ============================================================
-        */
+        <p>
+            This website acts as a temporary ESP32 tracker simulator.
+            Multiple student trackers can be created and simulated.
+        </p>
 
+        <p>
+            Each student has a separate Student ID, GPS location,
+            battery percentage and SOS status.
+        </p>
 
-        // ---------------------------------------------------------
-        // BLE UUIDs
-        // ---------------------------------------------------------
+        <p>
+            Later, the real ESP32 + GPS hardware will replace this
+            simulator without changing the overall data format.
+        </p>
 
-        const SERVICE_UUID =
-            "12345678-1234-1234-1234-123456789001";
+    </section>
 
-        const CHARACTERISTIC_UUID =
-            "12345678-1234-1234-1234-123456789002";
-
-
-        // ---------------------------------------------------------
-        // BLE VARIABLES
-        // ---------------------------------------------------------
-
-        let bluetoothDevice = null;
-        let bleCharacteristic = null;
-
-        let simulationInterval = null;
-
-        let isSimulating = false;
+</div>
 
 
-        // ---------------------------------------------------------
-        // LOCATION VARIABLES
-        // ---------------------------------------------------------
+<script>
 
-        let currentLatitude = 18.106500;
-
-        let currentLongitude = 83.395500;
-
-
-        // ---------------------------------------------------------
-        // HTML ELEMENTS
-        // ---------------------------------------------------------
-
-        const connectBtn =
-            document.getElementById("connectBtn");
-
-        const updateBtn =
-            document.getElementById("updateBtn");
-
-        const startBtn =
-            document.getElementById("startBtn");
-
-        const stopBtn =
-            document.getElementById("stopBtn");
+    /*
+    ============================================================
+    GeoGaurd MULTI-STUDENT BLE TRACKER SIMULATOR
+    ============================================================
+    */
 
 
-        const bleStatus =
-            document.getElementById("bleStatus");
+    // ---------------------------------------------------------
+    // BLE UUIDs
+    // ---------------------------------------------------------
+
+    const SERVICE_UUID =
+        "12345678-1234-1234-1234-123456789001";
+
+    const CHARACTERISTIC_UUID =
+        "12345678-1234-1234-1234-123456789002";
 
 
-        const simulationStatus =
-            document.getElementById("simulationStatus");
+    // ---------------------------------------------------------
+    // BLE VARIABLES
+    // ---------------------------------------------------------
+
+    let bluetoothDevice = null;
+    let bleCharacteristic = null;
+
+    let simulationInterval = null;
+    let isSimulating = false;
 
 
-        const latitudeDisplay =
-            document.getElementById("latitude");
+    // ---------------------------------------------------------
+    // STUDENT DATA
+    // ---------------------------------------------------------
+
+    let students = [];
+
+    let selectedStudentIndex = 0;
 
 
-        const longitudeDisplay =
-            document.getElementById("longitude");
+    // ---------------------------------------------------------
+    // HTML ELEMENTS
+    // ---------------------------------------------------------
+
+    const connectBtn =
+        document.getElementById("connectBtn");
+
+    const addStudentBtn =
+        document.getElementById("addStudentBtn");
+
+    const studentsList =
+        document.getElementById("studentsList");
+
+    const studentCount =
+        document.getElementById("studentCount");
+
+    const allStudentData =
+        document.getElementById("allStudentData");
+
+    const updateBtn =
+        document.getElementById("updateBtn");
+
+    const startBtn =
+        document.getElementById("startBtn");
+
+    const stopBtn =
+        document.getElementById("stopBtn");
+
+    const bleStatus =
+        document.getElementById("bleStatus");
+
+    const simulationStatus =
+        document.getElementById("simulationStatus");
+
+    const latitudeDisplay =
+        document.getElementById("latitude");
+
+    const longitudeDisplay =
+        document.getElementById("longitude");
+
+    const liveData =
+        document.getElementById("liveData");
+
+    const lastUpdate =
+        document.getElementById("lastUpdate");
+
+    const studentIdInput =
+        document.getElementById("studentId");
+
+    const batteryInput =
+        document.getElementById("battery");
+
+    const sosInput =
+        document.getElementById("sos");
+
+    const latStepInput =
+        document.getElementById("latStep");
+
+    const lngStepInput =
+        document.getElementById("lngStep");
 
 
-        const liveData =
-            document.getElementById("liveData");
+    // ---------------------------------------------------------
+    // CREATE FIRST STUDENT
+    // ---------------------------------------------------------
+
+    students.push({
+
+        studentId: "ST001",
+
+        latitude: 18.106500,
+
+        longitude: 83.395500,
+
+        battery: 87,
+
+        sos: "OFF"
+
+    });
 
 
-        const lastUpdate =
-            document.getElementById("lastUpdate");
+    // ---------------------------------------------------------
+    // ADD STUDENT
+    // ---------------------------------------------------------
+
+    addStudentBtn.addEventListener(
+        "click",
+        addStudent
+    );
 
 
-        const studentIdInput =
-            document.getElementById("studentId");
+    function addStudent() {
+
+        const number =
+            students.length + 1;
+
+        const newStudent = {
+
+            studentId:
+                "ST" +
+                String(number).padStart(3, "0"),
+
+            latitude:
+                18.106500 + (students.length * 0.001),
+
+            longitude:
+                83.395500 + (students.length * 0.001),
+
+            battery: 100,
+
+            sos: "OFF"
+
+        };
 
 
-        const batteryInput =
-            document.getElementById("battery");
+        students.push(newStudent);
 
 
-        const sosInput =
-            document.getElementById("sos");
+        selectedStudentIndex =
+            students.length - 1;
 
 
-        const latStepInput =
-            document.getElementById("latStep");
+        loadSelectedStudent();
+
+        renderStudents();
+
+        updateAllStudentData();
+
+    }
 
 
-        const lngStepInput =
-            document.getElementById("lngStep");
+    // ---------------------------------------------------------
+    // SELECT STUDENT
+    // ---------------------------------------------------------
+
+    function selectStudent(index) {
+
+        saveSelectedStudent();
+
+        selectedStudentIndex = index;
+
+        loadSelectedStudent();
+
+        renderStudents();
+
+    }
 
 
-        // ---------------------------------------------------------
-        // CONNECT BLUETOOTH
-        // ---------------------------------------------------------
+    // ---------------------------------------------------------
+    // LOAD SELECTED STUDENT
+    // ---------------------------------------------------------
 
-        connectBtn.addEventListener(
-            "click",
-            connectBluetooth
+    function loadSelectedStudent() {
+
+        const student =
+            students[selectedStudentIndex];
+
+
+        if (!student) {
+            return;
+        }
+
+
+        studentIdInput.value =
+            student.studentId;
+
+        batteryInput.value =
+            student.battery;
+
+        sosInput.value =
+            student.sos;
+
+        latitudeDisplay.textContent =
+            student.latitude.toFixed(6);
+
+        longitudeDisplay.textContent =
+            student.longitude.toFixed(6);
+
+
+        displayTrackerData(
+            getTrackerData()
         );
 
+    }
 
-        async function connectBluetooth() {
 
-            try {
+    // ---------------------------------------------------------
+    // SAVE SELECTED STUDENT
+    // ---------------------------------------------------------
 
-                if (!navigator.bluetooth) {
+    function saveSelectedStudent() {
 
-                    alert(
-                        "Web Bluetooth is not supported in this browser."
+        const student =
+            students[selectedStudentIndex];
+
+
+        if (!student) {
+            return;
+        }
+
+
+        student.studentId =
+            studentIdInput.value.trim() ||
+            student.studentId;
+
+
+        let battery =
+            parseInt(
+                batteryInput.value
+            );
+
+
+        if (isNaN(battery)) {
+            battery = 0;
+        }
+
+
+        battery =
+            Math.max(
+                0,
+                Math.min(
+                    100,
+                    battery
+                )
+            );
+
+
+        student.battery =
+            battery;
+
+
+        student.sos =
+            sosInput.value;
+
+    }
+
+
+    // ---------------------------------------------------------
+    // RENDER STUDENTS
+    // ---------------------------------------------------------
+
+    function renderStudents() {
+
+        studentsList.innerHTML = "";
+
+
+        students.forEach(
+            (student, index) => {
+
+                const item =
+                    document.createElement("div");
+
+
+                item.className =
+                    "student-item";
+
+
+                if (
+                    index ===
+                    selectedStudentIndex
+                ) {
+
+                    item.classList.add(
+                        "selected"
                     );
 
-                    return;
                 }
 
 
-                bleStatus.textContent =
-                    "Searching...";
+                item.innerHTML = `
+
+                    <div>
+
+                        <strong>
+                            ${student.studentId}
+                        </strong>
+
+                        <br>
+
+                        <small>
+                            Battery:
+                            ${student.battery}%
+                            |
+                            SOS:
+                            ${student.sos}
+                        </small>
+
+                    </div>
+
+                    <button
+                        class="select-student-btn"
+                        data-index="${index}"
+                    >
+                        Select
+                    </button>
+
+                `;
 
 
-                bleStatus.className =
-                    "status connecting";
-
-
-                /*
-                Request BLE device.
-
-                The Student App / receiver should connect
-                to the same service and characteristic.
-                */
-
-                bluetoothDevice =
-                    await navigator.bluetooth.requestDevice({
-
-                        acceptAllDevices: true,
-
-                        optionalServices: [
-                            SERVICE_UUID
-                        ]
-
-                    });
-
-
-                console.log(
-                    "Selected device:",
-                    bluetoothDevice.name
+                studentsList.appendChild(
+                    item
                 );
 
-
-                bluetoothDevice.addEventListener(
-                    "gattserverdisconnected",
-                    handleDisconnect
-                );
+            }
+        );
 
 
-                const server =
-                    await bluetoothDevice.gatt.connect();
+        studentCount.textContent =
+            "Students: " +
+            students.length;
 
 
-                const service =
-                    await server.getPrimaryService(
-                        SERVICE_UUID
+        document
+            .querySelectorAll(
+                ".select-student-btn"
+            )
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            selectStudent(
+                                Number(
+                                    button.dataset.index
+                                )
+                            );
+
+                        }
                     );
 
+                }
+            );
 
-                bleCharacteristic =
-                    await service.getCharacteristic(
-                        CHARACTERISTIC_UUID
-                    );
-
-
-                bleStatus.textContent =
-                    "Connected";
+    }
 
 
-                bleStatus.className =
-                    "status connected";
+    // ---------------------------------------------------------
+    // INPUT CHANGE
+    // ---------------------------------------------------------
+
+    studentIdInput.addEventListener(
+        "input",
+        saveSelectedStudent
+    );
 
 
-                connectBtn.textContent =
-                    "Connected";
+    batteryInput.addEventListener(
+        "input",
+        saveSelectedStudent
+    );
 
 
-                connectBtn.disabled =
-                    true;
+    sosInput.addEventListener(
+        "change",
+        saveSelectedStudent
+    );
 
 
-                console.log(
-                    "BLE connected successfully"
-                );
+    // ---------------------------------------------------------
+    // CONNECT BLUETOOTH
+    // ---------------------------------------------------------
+
+    connectBtn.addEventListener(
+        "click",
+        connectBluetooth
+    );
 
 
-            } catch (error) {
+    async function connectBluetooth() {
 
-                console.error(
-                    "BLE connection error:",
-                    error
-                );
+        try {
 
-
-                bleStatus.textContent =
-                    "Connection Failed";
-
-
-                bleStatus.className =
-                    "status disconnected";
-
+            if (!navigator.bluetooth) {
 
                 alert(
-                    "Bluetooth connection failed."
+                    "Web Bluetooth is not supported in this browser."
                 );
-
-            }
-
-        }
-
-
-        // ---------------------------------------------------------
-        // HANDLE BLE DISCONNECT
-        // ---------------------------------------------------------
-
-        function handleDisconnect() {
-
-            console.log(
-                "Bluetooth disconnected"
-            );
-
-
-            bleStatus.textContent =
-                "Disconnected";
-
-
-            bleStatus.className =
-                "status disconnected";
-
-
-            connectBtn.textContent =
-                "Connect BLE";
-
-
-            connectBtn.disabled =
-                false;
-
-
-            bluetoothDevice =
-                null;
-
-
-            bleCharacteristic =
-                null;
-
-        }
-
-
-        // ---------------------------------------------------------
-        // GET TRACKER DATA
-        // ---------------------------------------------------------
-
-        function getTrackerData() {
-
-            const studentId =
-                studentIdInput.value.trim() ||
-                "ST001";
-
-
-            let battery =
-                parseInt(
-                    batteryInput.value
-                );
-
-
-            if (isNaN(battery)) {
-
-                battery = 0;
-
-            }
-
-
-            battery =
-                Math.max(
-                    0,
-                    Math.min(
-                        100,
-                        battery
-                    )
-                );
-
-
-            const sos =
-                sosInput.value;
-
-
-            return {
-
-                studentId: studentId,
-
-                latitude:
-                    Number(
-                        currentLatitude.toFixed(6)
-                    ),
-
-                longitude:
-                    Number(
-                        currentLongitude.toFixed(6)
-                    ),
-
-                battery: battery,
-
-                sos: sos,
-
-                timestamp:
-                    new Date().toISOString()
-
-            };
-
-        }
-
-
-        // ---------------------------------------------------------
-        // DISPLAY TRACKER DATA
-        // ---------------------------------------------------------
-
-        function displayTrackerData(data) {
-
-            latitudeDisplay.textContent =
-                data.latitude.toFixed(6);
-
-
-            longitudeDisplay.textContent =
-                data.longitude.toFixed(6);
-
-
-            liveData.textContent =
-                JSON.stringify(
-                    data,
-                    null,
-                    2
-                );
-
-
-            lastUpdate.textContent =
-                new Date().toLocaleTimeString();
-
-        }
-
-
-        // ---------------------------------------------------------
-        // SEND BLE DATA
-        // ---------------------------------------------------------
-
-        async function sendBLEData(data) {
-
-            const jsonData =
-                JSON.stringify(data);
-
-
-            console.log(
-                "Tracker data:",
-                jsonData
-            );
-
-
-            /*
-            Send data only if BLE characteristic
-            is available.
-            */
-
-            if (
-                bleCharacteristic
-            ) {
-
-                try {
-
-                    const encoder =
-                        new TextEncoder();
-
-
-                    const encodedData =
-                        encoder.encode(
-                            jsonData
-                        );
-
-
-                    await bleCharacteristic.writeValue(
-                        encodedData
-                    );
-
-
-                    console.log(
-                        "Data sent through BLE"
-                    );
-
-
-                } catch (error) {
-
-                    console.error(
-                        "BLE send error:",
-                        error
-                    );
-
-                }
-
-            }
-
-        }
-
-
-        // ---------------------------------------------------------
-        // UPDATE LOCATION
-        // ---------------------------------------------------------
-
-        function moveLocation() {
-
-            const latStep =
-                parseFloat(
-                    latStepInput.value
-                ) || 0.000100;
-
-
-            const lngStep =
-                parseFloat(
-                    lngStepInput.value
-                ) || 0.000100;
-
-
-            /*
-            Move the simulated student.
-
-            This creates continuously changing
-            latitude and longitude values.
-            */
-
-            currentLatitude +=
-                latStep;
-
-
-            currentLongitude +=
-                lngStep;
-
-
-            /*
-            Keep coordinates within valid ranges.
-            */
-
-            if (
-                currentLatitude > 90
-            ) {
-
-                currentLatitude = 90;
-
-            }
-
-
-            if (
-                currentLatitude < -90
-            ) {
-
-                currentLatitude = -90;
-
-            }
-
-
-            if (
-                currentLongitude > 180
-            ) {
-
-                currentLongitude = -180;
-
-            }
-
-
-            if (
-                currentLongitude < -180
-            ) {
-
-                currentLongitude = 180;
-
-            }
-
-        }
-
-
-        // ---------------------------------------------------------
-        // UPDATE TRACKER
-        // ---------------------------------------------------------
-
-        updateBtn.addEventListener(
-            "click",
-            updateTracker
-        );
-
-
-        async function updateTracker() {
-
-            moveLocation();
-
-
-            const data =
-                getTrackerData();
-
-
-            displayTrackerData(
-                data
-            );
-
-
-            await sendBLEData(
-                data
-            );
-
-        }
-
-
-        // ---------------------------------------------------------
-        // START CONTINUOUS SIMULATION
-        // ---------------------------------------------------------
-
-        startBtn.addEventListener(
-            "click",
-            startSimulation
-        );
-
-
-        function startSimulation() {
-
-            if (
-                isSimulating
-            ) {
 
                 return;
 
             }
 
 
-            isSimulating =
-                true;
+            bleStatus.textContent =
+                "Searching...";
 
 
-            simulationStatus.textContent =
-                "Running";
+            bleStatus.className =
+                "status connecting";
 
 
-            startBtn.disabled =
-                true;
+            bluetoothDevice =
+                await navigator.bluetooth.requestDevice({
+
+                    acceptAllDevices: true,
+
+                    optionalServices: [
+                        SERVICE_UUID
+                    ]
+
+                });
 
 
-            stopBtn.disabled =
-                false;
+            console.log(
+                "Selected device:",
+                bluetoothDevice.name
+            );
 
 
-            /*
-            Send the first update immediately.
-            */
+            bluetoothDevice.addEventListener(
+                "gattserverdisconnected",
+                handleDisconnect
+            );
 
-            updateTracker();
+
+            const server =
+                await bluetoothDevice.gatt.connect();
 
 
-            /*
-            Continue sending tracker data.
-
-            Every 3 seconds:
-            latitude changes
-            longitude changes
-            timestamp changes
-            data is sent through BLE
-            */
-
-            simulationInterval =
-                setInterval(
-                    updateTracker,
-                    3000
+            const service =
+                await server.getPrimaryService(
+                    SERVICE_UUID
                 );
+
+
+            bleCharacteristic =
+                await service.getCharacteristic(
+                    CHARACTERISTIC_UUID
+                );
+
+
+            bleStatus.textContent =
+                "Connected";
+
+
+            bleStatus.className =
+                "status connected";
+
+
+            connectBtn.textContent =
+                "Connected";
+
+
+            connectBtn.disabled =
+                true;
+
+
+            console.log(
+                "BLE connected successfully"
+            );
+
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "BLE connection error:",
+                error
+            );
+
+
+            bleStatus.textContent =
+                "Connection Failed";
+
+
+            bleStatus.className =
+                "status disconnected";
+
+
+            alert(
+                "Bluetooth connection failed."
+            );
+
+        }
+
+    }
+
+
+    // ---------------------------------------------------------
+    // HANDLE DISCONNECT
+    // ---------------------------------------------------------
+
+    function handleDisconnect() {
+
+        bleStatus.textContent =
+            "Disconnected";
+
+
+        bleStatus.className =
+            "status disconnected";
+
+
+        connectBtn.textContent =
+            "Connect BLE";
+
+
+        connectBtn.disabled =
+            false;
+
+
+        bluetoothDevice =
+            null;
+
+
+        bleCharacteristic =
+            null;
+
+    }
+
+
+    // ---------------------------------------------------------
+    // GET TRACKER DATA
+    // ---------------------------------------------------------
+
+    function getTrackerData() {
+
+        saveSelectedStudent();
+
+
+        const student =
+            students[selectedStudentIndex];
+
+
+        return {
+
+            studentId:
+                student.studentId,
+
+            latitude:
+                Number(
+                    student.latitude.toFixed(6)
+                ),
+
+            longitude:
+                Number(
+                    student.longitude.toFixed(6)
+                ),
+
+            battery:
+                student.battery,
+
+            sos:
+                student.sos,
+
+            timestamp:
+                new Date().toISOString()
+
+        };
+
+    }
+
+
+    // ---------------------------------------------------------
+    // DISPLAY TRACKER DATA
+    // ---------------------------------------------------------
+
+    function displayTrackerData(data) {
+
+        latitudeDisplay.textContent =
+            data.latitude.toFixed(6);
+
+
+        longitudeDisplay.textContent =
+            data.longitude.toFixed(6);
+
+
+        liveData.textContent =
+            JSON.stringify(
+                data,
+                null,
+                2
+            );
+
+
+        lastUpdate.textContent =
+            new Date().toLocaleTimeString();
+
+    }
+
+
+    // ---------------------------------------------------------
+    // UPDATE ALL STUDENT DATA
+    // ---------------------------------------------------------
+
+    function updateAllStudentData() {
+
+        if (students.length === 0) {
+
+            allStudentData.textContent =
+                "No students added yet.";
+
+            return;
 
         }
 
 
-        // ---------------------------------------------------------
-        // STOP SIMULATION
-        // ---------------------------------------------------------
+        allStudentData.textContent =
+            JSON.stringify(
+                students,
+                null,
+                2
+            );
 
-        stopBtn.addEventListener(
-            "click",
-            stopSimulation
+    }
+
+
+    // ---------------------------------------------------------
+    // SEND BLE DATA
+    // ---------------------------------------------------------
+
+    async function sendBLEData(data) {
+
+        const jsonData =
+            JSON.stringify(data);
+
+
+        console.log(
+            "Tracker data:",
+            jsonData
         );
 
 
-        function stopSimulation() {
+        if (!bleCharacteristic) {
 
-            if (
-                simulationInterval
-            ) {
+            console.log(
+                "BLE characteristic not connected."
+            );
 
-                clearInterval(
-                    simulationInterval
-                );
-
-            }
-
-
-            simulationInterval =
-                null;
-
-
-            isSimulating =
-                false;
-
-
-            simulationStatus.textContent =
-                "Stopped";
-
-
-            startBtn.disabled =
-                false;
-
-
-            stopBtn.disabled =
-                true;
+            return;
 
         }
 
 
-        // ---------------------------------------------------------
-        // INITIAL DISPLAY
-        // ---------------------------------------------------------
+        try {
+
+            const encoder =
+                new TextEncoder();
+
+
+            const encodedData =
+                encoder.encode(
+                    jsonData
+                );
+
+
+            await bleCharacteristic.writeValue(
+                encodedData
+            );
+
+
+            console.log(
+                "Data sent through BLE"
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "BLE send error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    // ---------------------------------------------------------
+    // MOVE SELECTED STUDENT
+    // ---------------------------------------------------------
+
+    function moveSelectedStudent() {
+
+        const student =
+            students[selectedStudentIndex];
+
+
+        if (!student) {
+            return;
+        }
+
+
+        const latStep =
+            parseFloat(
+                latStepInput.value
+            ) || 0.000100;
+
+
+        const lngStep =
+            parseFloat(
+                lngStepInput.value
+            ) || 0.000100;
+
+
+        student.latitude +=
+            latStep;
+
+
+        student.longitude +=
+            lngStep;
+
+
+        if (
+            student.latitude > 90
+        ) {
+
+            student.latitude = 90;
+
+        }
+
+
+        if (
+            student.latitude < -90
+        ) {
+
+            student.latitude = -90;
+
+        }
+
+
+        if (
+            student.longitude > 180
+        ) {
+
+            student.longitude = -180;
+
+        }
+
+
+        if (
+            student.longitude < -180
+        ) {
+
+            student.longitude = 180;
+
+        }
+
+    }
+
+
+    // ---------------------------------------------------------
+    // UPDATE TRACKER
+    // ---------------------------------------------------------
+
+    updateBtn.addEventListener(
+        "click",
+        updateTracker
+    );
+
+
+    async function updateTracker() {
+
+        saveSelectedStudent();
+
+
+        moveSelectedStudent();
+
+
+        const data =
+            getTrackerData();
+
 
         displayTrackerData(
-            getTrackerData()
+            data
         );
 
 
-        // ---------------------------------------------------------
-        // LOG STARTUP
-        // ---------------------------------------------------------
+        updateAllStudentData();
 
-        console.log(
-            "GeoGaurd BLE Tracker Simulator loaded."
+
+        renderStudents();
+
+
+        await sendBLEData(
+            data
         );
 
-        console.log(
-            "Service UUID:",
-            SERVICE_UUID
-        );
+    }
 
-        console.log(
-            "Characteristic UUID:",
-            CHARACTERISTIC_UUID
-        );
 
-    </script>
+    // ---------------------------------------------------------
+    // START CONTINUOUS SIMULATION
+    // ---------------------------------------------------------
+
+    startBtn.addEventListener(
+        "click",
+        startSimulation
+    );
+
+
+    function startSimulation() {
+
+        if (isSimulating) {
+            return;
+        }
+
+
+        isSimulating = true;
+
+
+        simulationStatus.textContent =
+            "Running";
+
+
+        startBtn.disabled =
+            true;
+
+
+        stopBtn.disabled =
+            false;
+
+
+        updateTracker();
+
+
+        simulationInterval =
+            setInterval(
+                updateTracker,
+                3000
+            );
+
+    }
+
+
+    // ---------------------------------------------------------
+    // STOP SIMULATION
+    // ---------------------------------------------------------
+
+    stopBtn.addEventListener(
+        "click",
+        stopSimulation
+    );
+
+
+    function stopSimulation() {
+
+        if (
+            simulationInterval
+        ) {
+
+            clearInterval(
+                simulationInterval
+            );
+
+        }
+
+
+        simulationInterval =
+            null;
+
+
+        isSimulating =
+            false;
+
+
+        simulationStatus.textContent =
+            "Stopped";
+
+
+        startBtn.disabled =
+            false;
+
+
+        stopBtn.disabled =
+            true;
+
+    }
+
+
+    // ---------------------------------------------------------
+    // INITIAL DISPLAY
+    // ---------------------------------------------------------
+
+    renderStudents();
+
+    loadSelectedStudent();
+
+    updateAllStudentData();
+
+
+    console.log(
+        "GeoGaurd Multi-Student BLE Simulator loaded."
+    );
+
+
+    console.log(
+        "Service UUID:",
+        SERVICE_UUID
+    );
+
+
+    console.log(
+        "Characteristic UUID:",
+        CHARACTERISTIC_UUID
+    );
+
+</script>
 
 </body>
 </html>
