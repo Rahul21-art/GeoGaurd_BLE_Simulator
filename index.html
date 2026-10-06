@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GeoGaurd BLE Tracker Simulator</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <header class="header">
+            <h1>GeoGaurd</h1>
+            <p>ESP32 / BLE Tracker Simulator</p>
+        </header>
+
+
+        <!-- BLE CONNECTION -->
+        <section class="card">
+
+            <h2>Bluetooth Connection</h2>
+
+            <div class="status-row">
+
+                <div>
+                    <span class="status-label">BLE Status</span>
+
+                    <span id="bleStatus" class="status disconnected">
+                        Disconnected
+                    </span>
+                </div>
+
+                <button id="connectBtn" class="primary-btn">
+                    Connect BLE
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- STUDENT INFORMATION -->
+        <section class="card">
+
+            <h2>Student Tracker</h2>
+
+            <div class="form-group">
+
+                <label for="studentId">
+                    Student ID
+                </label>
+
+                <input
+                    type="text"
+                    id="studentId"
+                    value="ST001"
+                    placeholder="Enter Student ID"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="battery">
+                    Battery (%)
+                </label>
+
+                <input
+                    type="number"
+                    id="battery"
+                    value="87"
+                    min="0"
+                    max="100"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="sos">
+                    SOS Status
+                </label>
+
+                <select id="sos">
+
+                    <option value="OFF">
+                        OFF
+                    </option>
+
+                    <option value="ON">
+                        ON
+                    </option>
+
+                </select>
+
+            </div>
+
+        </section>
+
+
+        <!-- LOCATION -->
+        <section class="card">
+
+            <h2>Location</h2>
+
+            <div class="location-grid">
+
+                <div class="location-box">
+
+                    <span class="location-label">
+                        Latitude
+                    </span>
+
+                    <strong id="latitude">
+                        18.106500
+                    </strong>
+
+                </div>
+
+
+                <div class="location-box">
+
+                    <span class="location-label">
+                        Longitude
+                    </span>
+
+                    <strong id="longitude">
+                        83.395500
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="location-controls">
+
+                <div class="form-group">
+
+                    <label for="latStep">
+                        Latitude Change
+                    </label>
+
+                    <input
+                        type="number"
+                        id="latStep"
+                        value="0.000100"
+                        step="0.000001"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="lngStep">
+                        Longitude Change
+                    </label>
+
+                    <input
+                        type="number"
+                        id="lngStep"
+                        value="0.000100"
+                        step="0.000001"
+                    >
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SIMULATION CONTROLS -->
+        <section class="card">
+
+            <h2>Simulation Controls</h2>
+
+
+            <div class="button-group">
+
+                <button
+                    id="updateBtn"
+                    class="primary-btn"
+                >
+                    Update Tracker
+                </button>
+
+
+                <button
+                    id="startBtn"
+                    class="success-btn"
+                >
+                    Start Continuous Simulation
+                </button>
+
+
+                <button
+                    id="stopBtn"
+                    class="danger-btn"
+                    disabled
+                >
+                    Stop Simulation
+                </button>
+
+            </div>
+
+
+            <div class="simulation-status">
+
+                <span>
+                    Simulation:
+                </span>
+
+                <strong id="simulationStatus">
+                    Stopped
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- LIVE DATA -->
+        <section class="card">
+
+            <h2>Live Tracker Data</h2>
+
+
+            <div class="data-box">
+
+                <pre id="liveData">{
+  "studentId": "ST001",
+  "latitude": 18.106500,
+  "longitude": 83.395500,
+  "battery": 87,
+  "sos": "OFF"
+}</pre>
+
+            </div>
+
+        </section>
+
+
+        <!-- LAST UPDATE -->
+        <section class="card">
+
+            <div class="last-update">
+
+                <span>
+                    Last Update
+                </span>
+
+                <strong id="lastUpdate">
+                    Not updated yet
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- INFORMATION -->
+        <section class="info-card">
+
+            <h3>How this simulator works</h3>
+
+            <p>
+                This website acts as a temporary ESP32 tracker.
+                It generates student ID, GPS location, battery and
+                SOS information and sends the data through Bluetooth.
+            </p>
+
+            <p>
+                Later, the real ESP32 + GPS hardware will replace
+                this simulator without changing the overall data format.
+            </p>
+
+        </section>
+
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script>
+
+        /*
+        ============================================================
+        GeoGaurd BLE TRACKER SIMULATOR
+        ============================================================
+        */
+
+
+        // ---------------------------------------------------------
+        // BLE UUIDs
+        // ---------------------------------------------------------
+
+        const SERVICE_UUID =
+            "12345678-1234-1234-1234-123456789001";
+
+        const CHARACTERISTIC_UUID =
+            "12345678-1234-1234-1234-123456789002";
+
+
+        // ---------------------------------------------------------
+        // BLE VARIABLES
+        // ---------------------------------------------------------
+
+        let bluetoothDevice = null;
+        let bleCharacteristic = null;
+
+        let simulationInterval = null;
+
+        let isSimulating = false;
+
+
+        // ---------------------------------------------------------
+        // LOCATION VARIABLES
+        // ---------------------------------------------------------
+
+        let currentLatitude = 18.106500;
+
+        let currentLongitude = 83.395500;
+
+
+        // ---------------------------------------------------------
+        // HTML ELEMENTS
+        // ---------------------------------------------------------
+
+        const connectBtn =
+            document.getElementById("connectBtn");
+
+        const updateBtn =
+            document.getElementById("updateBtn");
+
+        const startBtn =
+            document.getElementById("startBtn");
+
+        const stopBtn =
+            document.getElementById("stopBtn");
+
+
+        const bleStatus =
+            document.getElementById("bleStatus");
+
+
+        const simulationStatus =
+            document.getElementById("simulationStatus");
+
+
+        const latitudeDisplay =
+            document.getElementById("latitude");
+
+
+        const longitudeDisplay =
+            document.getElementById("longitude");
+
+
+        const liveData =
+            document.getElementById("liveData");
+
+
+        const lastUpdate =
+            document.getElementById("lastUpdate");
+
+
+        const studentIdInput =
+            document.getElementById("studentId");
+
+
+        const batteryInput =
+            document.getElementById("battery");
+
+
+        const sosInput =
+            document.getElementById("sos");
+
+
+        const latStepInput =
+            document.getElementById("latStep");
+
+
+        const lngStepInput =
+            document.getElementById("lngStep");
+
+
+        // ---------------------------------------------------------
+        // CONNECT BLUETOOTH
+        // ---------------------------------------------------------
+
+        connectBtn.addEventListener(
+            "click",
+            connectBluetooth
+        );
+
+
+        async function connectBluetooth() {
+
+            try {
+
+                if (!navigator.bluetooth) {
+
+                    alert(
+                        "Web Bluetooth is not supported in this browser."
+                    );
+
+                    return;
+                }
+
+
+                bleStatus.textContent =
+                    "Searching...";
+
+
+                bleStatus.className =
+                    "status connecting";
+
+
+                /*
+                Request BLE device.
+
+                The Student App / receiver should connect
+                to the same service and characteristic.
+                */
+
+                bluetoothDevice =
+                    await navigator.bluetooth.requestDevice({
+
+                        acceptAllDevices: true,
+
+                        optionalServices: [
+                            SERVICE_UUID
+                        ]
+
+                    });
+
+
+                console.log(
+                    "Selected device:",
+                    bluetoothDevice.name
+                );
+
+
+                bluetoothDevice.addEventListener(
+                    "gattserverdisconnected",
+                    handleDisconnect
+                );
+
+
+                const server =
+                    await bluetoothDevice.gatt.connect();
+
+
+                const service =
+                    await server.getPrimaryService(
+                        SERVICE_UUID
+                    );
+
+
+                bleCharacteristic =
+                    await service.getCharacteristic(
+                        CHARACTERISTIC_UUID
+                    );
+
+
+                bleStatus.textContent =
+                    "Connected";
+
+
+                bleStatus.className =
+                    "status connected";
+
+
+                connectBtn.textContent =
+                    "Connected";
+
+
+                connectBtn.disabled =
+                    true;
+
+
+                console.log(
+                    "BLE connected successfully"
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "BLE connection error:",
+                    error
+                );
+
+
+                bleStatus.textContent =
+                    "Connection Failed";
+
+
+                bleStatus.className =
+                    "status disconnected";
+
+
+                alert(
+                    "Bluetooth connection failed."
+                );
+
+            }
+
+        }
+
+
+        // ---------------------------------------------------------
+        // HANDLE BLE DISCONNECT
+        // ---------------------------------------------------------
+
+        function handleDisconnect() {
+
+            console.log(
+                "Bluetooth disconnected"
+            );
+
+
+            bleStatus.textContent =
+                "Disconnected";
+
+
+            bleStatus.className =
+                "status disconnected";
+
+
+            connectBtn.textContent =
+                "Connect BLE";
+
+
+            connectBtn.disabled =
+                false;
+
+
+            bluetoothDevice =
+                null;
+
+
+            bleCharacteristic =
+                null;
+
+        }
+
+
+        // ---------------------------------------------------------
+        // GET TRACKER DATA
+        // ---------------------------------------------------------
+
+        function getTrackerData() {
+
+            const studentId =
+                studentIdInput.value.trim() ||
+                "ST001";
+
+
+            let battery =
+                parseInt(
+                    batteryInput.value
+                );
+
+
+            if (isNaN(battery)) {
+
+                battery = 0;
+
+            }
+
+
+            battery =
+                Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        battery
+                    )
+                );
+
+
+            const sos =
+                sosInput.value;
+
+
+            return {
+
+                studentId: studentId,
+
+                latitude:
+                    Number(
+                        currentLatitude.toFixed(6)
+                    ),
+
+                longitude:
+                    Number(
+                        currentLongitude.toFixed(6)
+                    ),
+
+                battery: battery,
+
+                sos: sos,
+
+                timestamp:
+                    new Date().toISOString()
+
+            };
+
+        }
+
+
+        // ---------------------------------------------------------
+        // DISPLAY TRACKER DATA
+        // ---------------------------------------------------------
+
+        function displayTrackerData(data) {
+
+            latitudeDisplay.textContent =
+                data.latitude.toFixed(6);
+
+
+            longitudeDisplay.textContent =
+                data.longitude.toFixed(6);
+
+
+            liveData.textContent =
+                JSON.stringify(
+                    data,
+                    null,
+                    2
+                );
+
+
+            lastUpdate.textContent =
+                new Date().toLocaleTimeString();
+
+        }
+
+
+        // ---------------------------------------------------------
+        // SEND BLE DATA
+        // ---------------------------------------------------------
+
+        async function sendBLEData(data) {
+
+            const jsonData =
+                JSON.stringify(data);
+
+
+            console.log(
+                "Tracker data:",
+                jsonData
+            );
+
+
+            /*
+            Send data only if BLE characteristic
+            is available.
+            */
+
+            if (
+                bleCharacteristic
+            ) {
+
+                try {
+
+                    const encoder =
+                        new TextEncoder();
+
+
+                    const encodedData =
+                        encoder.encode(
+                            jsonData
+                        );
+
+
+                    await bleCharacteristic.writeValue(
+                        encodedData
+                    );
+
+
+                    console.log(
+                        "Data sent through BLE"
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "BLE send error:",
+                        error
+                    );
+
+                }
+
+            }
+
+        }
+
+
+        // ---------------------------------------------------------
+        // UPDATE LOCATION
+        // ---------------------------------------------------------
+
+        function moveLocation() {
+
+            const latStep =
+                parseFloat(
+                    latStepInput.value
+                ) || 0.000100;
+
+
+            const lngStep =
+                parseFloat(
+                    lngStepInput.value
+                ) || 0.000100;
+
+
+            /*
+            Move the simulated student.
+
+            This creates continuously changing
+            latitude and longitude values.
+            */
+
+            currentLatitude +=
+                latStep;
+
+
+            currentLongitude +=
+                lngStep;
+
+
+            /*
+            Keep coordinates within valid ranges.
+            */
+
+            if (
+                currentLatitude > 90
+            ) {
+
+                currentLatitude = 90;
+
+            }
+
+
+            if (
+                currentLatitude < -90
+            ) {
+
+                currentLatitude = -90;
+
+            }
+
+
+            if (
+                currentLongitude > 180
+            ) {
+
+                currentLongitude = -180;
+
+            }
+
+
+            if (
+                currentLongitude < -180
+            ) {
+
+                currentLongitude = 180;
+
+            }
+
+        }
+
+
+        // ---------------------------------------------------------
+        // UPDATE TRACKER
+        // ---------------------------------------------------------
+
+        updateBtn.addEventListener(
+            "click",
+            updateTracker
+        );
+
+
+        async function updateTracker() {
+
+            moveLocation();
+
+
+            const data =
+                getTrackerData();
+
+
+            displayTrackerData(
+                data
+            );
+
+
+            await sendBLEData(
+                data
+            );
+
+        }
+
+
+        // ---------------------------------------------------------
+        // START CONTINUOUS SIMULATION
+        // ---------------------------------------------------------
+
+        startBtn.addEventListener(
+            "click",
+            startSimulation
+        );
+
+
+        function startSimulation() {
+
+            if (
+                isSimulating
+            ) {
+
+                return;
+
+            }
+
+
+            isSimulating =
+                true;
+
+
+            simulationStatus.textContent =
+                "Running";
+
+
+            startBtn.disabled =
+                true;
+
+
+            stopBtn.disabled =
+                false;
+
+
+            /*
+            Send the first update immediately.
+            */
+
+            updateTracker();
+
+
+            /*
+            Continue sending tracker data.
+
+            Every 3 seconds:
+            latitude changes
+            longitude changes
+            timestamp changes
+            data is sent through BLE
+            */
+
+            simulationInterval =
+                setInterval(
+                    updateTracker,
+                    3000
+                );
+
+        }
+
+
+        // ---------------------------------------------------------
+        // STOP SIMULATION
+        // ---------------------------------------------------------
+
+        stopBtn.addEventListener(
+            "click",
+            stopSimulation
+        );
+
+
+        function stopSimulation() {
+
+            if (
+                simulationInterval
+            ) {
+
+                clearInterval(
+                    simulationInterval
+                );
+
+            }
+
+
+            simulationInterval =
+                null;
+
+
+            isSimulating =
+                false;
+
+
+            simulationStatus.textContent =
+                "Stopped";
+
+
+            startBtn.disabled =
+                false;
+
+
+            stopBtn.disabled =
+                true;
+
+        }
+
+
+        // ---------------------------------------------------------
+        // INITIAL DISPLAY
+        // ---------------------------------------------------------
+
+        displayTrackerData(
+            getTrackerData()
+        );
+
+
+        // ---------------------------------------------------------
+        // LOG STARTUP
+        // ---------------------------------------------------------
+
+        console.log(
+            "GeoGaurd BLE Tracker Simulator loaded."
+        );
+
+        console.log(
+            "Service UUID:",
+            SERVICE_UUID
+        );
+
+        console.log(
+            "Characteristic UUID:",
+            CHARACTERISTIC_UUID
+        );
+
+    </script>
+
+</body>
+</html>
